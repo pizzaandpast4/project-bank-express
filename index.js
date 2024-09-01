@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
-let accounts = {};
+let accounts = [];
 const port = 3333;
 
 const isAdult = (dob) => {
