@@ -16,15 +16,37 @@ const formatCurrency = (cents) => {
     return (cents / 100).toFixed(2).replace('.', ',') + ' Eur';
 };
 
-const validateAccountData = ({ firstName, lastName, dateOfBirth }) => {
+app.post('/api/account', (req, res) => {
+    const { firstName, lastName, dateOfBirth } = req.body;
+
     if (!firstName || !lastName || !dateOfBirth) {
-        return { valid: false, error: 'First name, last name, and date of birth are required.' };
+        return res.json({ message: 'There was an error.', error: 'First name, last name, and date of birth are required.' });
     }
+
     if (!isAdult(dateOfBirth)) {
-        return { valid: false, error: 'User must be at least 18 years old.' };
+        return res.json({ message: 'There was an error.', error: 'User must be at least 18 years old.' });
     }
-    return { valid: true };
-};
+
+    const existingAccount = accounts.find(account =>
+        account.firstName.toLowerCase() === firstName.toLowerCase() &&
+        account.lastName.toLowerCase() === lastName.toLowerCase()
+    );
+
+    if (existingAccount) {
+        return res.json({ message: 'There was an error.', error: 'Account already exists.' });
+    }
+
+    const newAccount = {
+        id: accounts.length + 1,
+        firstName,
+        lastName,
+        dateOfBirth,
+        balance: 0
+    };
+    accounts.push(newAccount);
+    res.json({ message: `Account created for ${firstName} ${lastName}` });
+});
+
 
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
