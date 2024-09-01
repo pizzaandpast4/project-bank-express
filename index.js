@@ -12,6 +12,10 @@ const isAdult = (dob) => {
     return age >= 18;
 };
 
+const formatCurrency = (cents) => {
+    return (cents / 100).toFixed(2).replace('.', ',') + ' Eur';
+};
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
