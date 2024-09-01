@@ -9,3 +9,4 @@ const isAdult = (dob) => {
     const birthDate = new Date(dob);
     const age = new Date().getFullYear() - birthDate.getFullYear();
     return age >= 18;
+};    
