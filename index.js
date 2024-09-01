@@ -8,7 +8,17 @@ const port = 3333;
 
 const isAdult = (dob) => {
     const birthDate = new Date(dob);
-    const age = new Date().getFullYear() - birthDate.getFullYear();
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const hasBirthdayPassed =
+        today.getMonth() > birthDate.getMonth() ||
+        (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+
+    if (!hasBirthdayPassed) {
+        age--;
+    }
+
     return age >= 18;
 };
 
