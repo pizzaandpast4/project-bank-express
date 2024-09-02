@@ -198,6 +198,28 @@ app.get('/api/account/:name-surname/dob', (req, res) => {
     res.json({ dateOfBirth: account.dateOfBirth });
 });
 
+app.put('/api/account/:name-surname/dob', (req, res) => {
+    const [firstName, lastName] = req.params['name-surname'].toLowerCase().split('-');
+    const account = accounts.find(acc =>
+        acc.firstName.toLowerCase() === firstName &&
+        acc.lastName.toLowerCase() === lastName
+    );
+
+    if (!account) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    const { newDateOfBirth } = req.body;
+
+    if (!newDateOfBirth) {
+        return res.json({ message: 'There was an error.', error: 'Date of birth is required.' });
+    }
+
+    account.dateOfBirth = newDateOfBirth;
+
+    res.json({ message: 'Date of birth updated successfully.' });
+});
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
