@@ -220,6 +220,29 @@ app.put('/api/account/:name-surname/dob', (req, res) => {
     res.json({ message: 'Date of birth updated successfully.' });
 });
 
+app.post('/api/withdrawal', (req, res) => {
+    const { amount, firstName, lastName } = req.body;
+    const account = accounts.find(acc =>
+        acc.firstName.toLowerCase() === firstName.toLowerCase() &&
+        acc.lastName.toLowerCase() === lastName.toLowerCase()
+    );
+
+    if (!amount || amount <= 0) {
+        return res.json({ message: 'There was an error.', error: 'Valid amount is required for withdrawal.' });
+    }
+
+    if (!account) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    if (account.balance < amount) {
+        return res.json({ message: 'There was an error.', error: 'Insufficient funds.' });
+    }
+
+    account.balance -= amount;
+    res.json({ message: 'Withdrawal successful.', balance: formatCurrency(account.balance) });
+});
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
