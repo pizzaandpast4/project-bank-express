@@ -90,6 +90,28 @@ app.delete('/api/account/:name-surname', (req, res) => {
     res.json({ message: 'Account deleted successfully.' });
 });
 
+app.put('/api/account/:name-surname', (req, res) => {
+    const [firstName, lastName] = req.params['name-surname'].toLowerCase().split('-');
+    const account = accounts.find(acc =>
+        acc.firstName.toLowerCase() === firstName &&
+        acc.lastName.toLowerCase() === lastName
+    );
+
+    if (!account) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    const updates = req.body;
+
+    Object.keys(updates).forEach(key => {
+        if (account.hasOwnProperty(key)) {
+            account[key] = updates[key];
+        }
+    });
+
+    return res.json({ message: 'Account updated successfully.', account });
+});
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
