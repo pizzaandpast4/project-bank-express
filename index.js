@@ -126,6 +126,27 @@ app.get('/api/account/:name-surname/name', (req, res) => {
     res.json({ firstName: account.firstName });
 });
 
+app.put('/api/account/:name-surname/name', (req, res) => {
+    const [firstName, lastName] = req.params['name-surname'].toLowerCase().split('-');
+    const account = accounts.find(acc =>
+        acc.firstName.toLowerCase() === firstName &&
+        acc.lastName.toLowerCase() === lastName
+    );
+
+    if (!account) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    const { newFirstName } = req.body;
+
+    if (!newFirstName) {
+        return res.json({ message: 'There was an error.', error: 'First name is required.' });
+    }
+
+    account.firstName = newFirstName;
+
+    res.json({ message: 'First name updated successfully.' });
+});
 
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
