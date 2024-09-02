@@ -71,6 +71,25 @@ app.get('/api/account/:name-surname', (req, res) => {
     res.json({ firstName: account.firstName, lastName: account.lastName, dateOfBirth: account.dateOfBirth });
 });
 
+app.delete('/api/account/:name-surname', (req, res) => {
+    const [firstName, lastName] = req.params['name-surname'].toLowerCase().split('-');
+    const accountIndex = accounts.findIndex(acc =>
+        acc.firstName.toLowerCase() === firstName &&
+        acc.lastName.toLowerCase() === lastName
+    );
+
+    if (accountIndex === -1) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    if (accounts[accountIndex].balance > 0) {
+        return res.json({ message: 'There was an error.', error: 'Cannot delete account with balance.' });
+    }
+
+    accounts.splice(accountIndex, 1);
+    res.json({ message: 'Account deleted successfully.' });
+});
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
