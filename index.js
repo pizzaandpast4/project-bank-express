@@ -101,16 +101,31 @@ app.put('/api/account/:name-surname', (req, res) => {
         return res.json({ message: 'There was an error.', error: 'Account not found.' });
     }
 
-    const updates = req.body;
+    if (!newFirstName || !newLastName || !dateOfBirth) {
+        return res.json({ message: 'There was an error.', error: 'First name, last name, and date of birth are required.' });
+    }
 
-    Object.keys(updates).forEach(key => {
-        if (account.hasOwnProperty(key)) {
-            account[key] = updates[key];
-        }
-    });
+    account.firstName = newFirstName;
+    account.lastName = newLastName;
+    account.dateOfBirth = dateOfBirth;
 
-    return res.json({ message: 'Account updated successfully.', account });
+    res.json({ message: 'Account updated successfully.' });
 });
+
+app.get('/api/account/:name-surname/name', (req, res) => {
+    const [firstName, lastName] = req.params['name-surname'].toLowerCase().split('-');
+    const account = accounts.find(acc =>
+        acc.firstName.toLowerCase() === firstName &&
+        acc.lastName.toLowerCase() === lastName
+    );
+
+    if (!account) {
+        return res.json({ message: 'There was an error.', error: 'Account not found.' });
+    }
+
+    res.json({ firstName: account.firstName });
+});
+
 
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
