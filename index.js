@@ -262,6 +262,39 @@ app.post('/api/deposit', (req, res) => {
     res.json({ message: 'Deposit successful.', balance: formatCurrency(account.balance) });
 });
 
+app.post('/api/transfer', (req, res) => {
+    const { fromFirstName, fromLastName, toFirstName, toLastName, amount } = req.body;
+    const fromAccount = accounts.find(acc =>
+        acc.firstName.toLowerCase() === fromFirstName.toLowerCase() &&
+        acc.lastName.toLowerCase() === fromLastName.toLowerCase()
+    );
+    const toAccount = accounts.find(acc =>
+        acc.firstName.toLowerCase() === toFirstName.toLowerCase() &&
+        acc.lastName.toLowerCase() === toLastName.toLowerCase()
+    );
+
+    if (!amount || amount <= 0) {
+        return res.json({ message: 'There was an error.', error: 'Valid amount is required for transfer.' });
+    }
+
+    if (!fromAccount) {
+        return res.json({ message: 'There was an error.', error: 'Source account not found.' });
+    }
+
+    if (!toAccount) {
+        return res.json({ message: 'There was an error.', error: 'Destination account not found.' });
+    }
+
+    if (fromAccount.balance < amount) {
+        return res.json({ message: 'There was an error.', error: 'Insufficient funds.' });
+    }
+
+    fromAccount.balance -= amount;
+    toAccount.balance += amount;
+
+    res.json({ message: 'Transfer successful.', fromBalance: formatCurrency(fromAccount.balance), toBalance: formatCurrency(toAccount.balance) });
+});
+
 app.listen(port, () => {
     console.log(`App running on: http://localhost:${port}`);
 });
